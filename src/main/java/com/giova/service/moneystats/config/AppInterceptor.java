@@ -30,66 +30,69 @@ import static io.github.giovannilamarmora.utils.exception.UtilsException.getExce
 @Component
 @AllArgsConstructor
 public class AppInterceptor extends OncePerRequestFilter {
-    private final Logger LOG = LoggerFactory.getLogger(this.getClass());
+  private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
-    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-    @Autowired
-    private AuthService authService;
+  private final ObjectMapper objectMapper =
+      new ObjectMapper()
+          .registerModule(new JavaTimeModule())
+          .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+  @Autowired private AuthService authService;
 
-    private final UserEntity user;
+  private final UserEntity user;
 
-    private static boolean isEmpty(String value) {
-        return value == null || value.isBlank();
+  private static boolean isEmpty(String value) {
+    return value == null || value.isBlank();
+  }
+
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+    String authToken = request.getHeader(AuthToken.AUTH_TOKEN_HEADER_NAME);
+    ExceptionResponse exceptionResponse = new ExceptionResponse();
+    if (isEmpty(authToken)) {
+      LOG.error("Auth-Token not found");
+      response.reset();
+      filterChain.doFilter(request, response);
+      return;
     }
-
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        String authToken = request.getHeader(AuthToken.AUTH_TOKEN_HEADER_NAME);
-        ExceptionResponse exceptionResponse = new ExceptionResponse();
-        if (isEmpty(authToken)) {
-            LOG.error("Auth-Token not found");
-            response.reset();
-            filterChain.doFilter(request, response);
-            return;
-        }
-        UserEntity checkUser = new UserEntity();
-        AuthToken generateToken = new AuthToken();
-        try {
-            checkUser = authService.checkLogin(authToken);
-            generateToken = authService.regenerateToken(checkUser);
-        } catch (UtilsException e) {
-            LOG.error("Auth-Token error on checking user or regenerate token, message: {}", e.getMessage());
-            exceptionResponse = getExceptionResponse(e, request, e.getExceptionCode(), e.getExceptionCode().getStatus());
-            response.addHeader("EXCEPTION_RESPONSE", objectMapper.writeValueAsString(exceptionResponse));
-            response.setStatus(e.getExceptionCode().getStatus().value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.getWriter().write(convertObjectToJson(exceptionResponse));
-            //objectMapper.writeValue(response.getWriter(), exceptionResponse);
-            return;
-        }
-        setUserInContext(checkUser);
-        response.addHeader(
-                AuthToken.AUTH_TOKEN_HEADER_NAME, generateToken.getAccessToken());
-        filterChain.doFilter(request, response);
+    UserEntity checkUser = new UserEntity();
+    AuthToken generateToken = new AuthToken();
+    try {
+      checkUser = authService.checkLogin(authToken);
+      generateToken = authService.regenerateToken(checkUser);
+    } catch (UtilsException e) {
+      LOG.error(
+          "Auth-Token error on checking user or regenerate token, message: {}", e.getMessage());
+      exceptionResponse =
+          getExceptionResponse(e, request, e.getExceptionCode(), e.getExceptionCode().getStatus());
+      response.addHeader("EXCEPTION_RESPONSE", objectMapper.writeValueAsString(exceptionResponse));
+      response.setStatus(e.getExceptionCode().getStatus().value());
+      response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+      response.getWriter().write(convertObjectToJson(exceptionResponse));
+      // objectMapper.writeValue(response.getWriter(), exceptionResponse);
+      return;
     }
+    setUserInContext(checkUser);
+    response.setHeader(AuthToken.AUTH_TOKEN_HEADER_NAME, generateToken.getAccessToken());
+    filterChain.doFilter(request, response);
+  }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        List<String> notFiltering = List.of("/v1/auth/sign-up", "/v1/auth/login", "/v1/app/report/bug");
-        return notFiltering.contains(path);
-    }
+  @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) {
+    String path = request.getRequestURI();
+    List<String> notFiltering = List.of("/v1/auth/sign-up", "/v1/auth/login", "/v1/app/report/bug");
+    return notFiltering.contains(path);
+  }
 
-    public String convertObjectToJson(Object object) throws JsonProcessingException {
-        if (object == null) {
-            return null;
-        }
-        return objectMapper.writeValueAsString(object);
+  public String convertObjectToJson(Object object) throws JsonProcessingException {
+    if (object == null) {
+      return null;
     }
+    return objectMapper.writeValueAsString(object);
+  }
 
-    private void setUserInContext(UserEntity user) {
-        BeanUtils.copyProperties(user, this.user);
-    }
+  private void setUserInContext(UserEntity user) {
+    BeanUtils.copyProperties(user, this.user);
+  }
 }

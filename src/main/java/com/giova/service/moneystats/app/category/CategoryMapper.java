@@ -13,12 +13,15 @@ import java.util.stream.Collectors;
 @Component
 public class CategoryMapper {
 
-    @LogInterceptor(type = LogTimeTracker.ActionType.APP_MAPPER)
-    public List<Category> mapCategoryEntityToCategory(List<CategoryEntity> categoryEntities) {
-        return categoryEntities.stream().map(categoryEntity -> {
-            Category category = new Category();
-            BeanUtils.copyProperties(categoryEntity, category);
-            return category;
-        }).collect(Collectors.toList());
-    }
+  @LogInterceptor(type = LogTimeTracker.ActionType.APP_MAPPER)
+  public List<Category> mapCategoryEntityToCategory(List<CategoryEntity> categoryEntities) {
+    return categoryEntities.stream()
+        .map(
+            categoryEntity -> {
+              Category category = new Category();
+              BeanUtils.copyProperties(categoryEntity, category);
+              return category;
+            })
+        .collect(Collectors.toList());
+  }
 }

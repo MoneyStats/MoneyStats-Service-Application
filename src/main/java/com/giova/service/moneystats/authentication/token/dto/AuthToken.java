@@ -11,9 +11,8 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuthToken {
 
-    public static final String AUTH_TOKEN_HEADER_NAME = "authToken";
+  public static final String AUTH_TOKEN_HEADER_NAME = "authToken";
 
-    private Long expirationTime;
-    private String accessToken;
-
+  private Long expirationTime;
+  private String accessToken;
 }

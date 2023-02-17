@@ -22,3 +22,5 @@ rest:
 jwt:
   secret: B710834ECC17FAAC9977FE2980C4604E9AAA59
   time: 3600
+app:
+  invitationCode: token

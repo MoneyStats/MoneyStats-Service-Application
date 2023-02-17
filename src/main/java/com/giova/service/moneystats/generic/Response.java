@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response {
-    private Integer status;
-    private String message;
-    private String correlationId;
-    private Object data;
+  private Integer status;
+  private String message;
+  private String correlationId;
+  private Object data;
 }

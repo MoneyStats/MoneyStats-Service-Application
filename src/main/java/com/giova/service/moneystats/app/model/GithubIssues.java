@@ -13,8 +13,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GithubIssues {
 
-    private String title;
-    private String body;
-    private List<String> assignees;
-    private List<String> labels;
+  private String title;
+  private String body;
+  private List<String> assignees;
+  private List<String> labels;
 }

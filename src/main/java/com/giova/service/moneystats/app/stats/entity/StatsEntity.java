@@ -21,28 +21,28 @@ import java.time.LocalDate;
 @Table(name = "STATS")
 public class StatsEntity extends GenericEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ID", nullable = false)
+  private Long id;
 
-    @Column(name = "DATE", nullable = false)
-    private LocalDate date;
+  @Column(name = "DATE", nullable = false)
+  private LocalDate date;
 
-    @Column(name = "BALANCE", nullable = false)
-    private Double balance;
+  @Column(name = "BALANCE", nullable = false)
+  private Double balance;
 
-    @Column(name = "PERCENTAGE", nullable = false)
-    private Double percentage;
+  @Column(name = "PERCENTAGE", nullable = false)
+  private Double percentage;
 
-    @Column(name = "TREND", nullable = false)
-    private Double trend;
+  @Column(name = "TREND", nullable = false)
+  private Double trend;
 
-    @ManyToOne
-    @JoinColumn(name = "USER_ID", nullable = false)
-    private UserEntity user;
+  @ManyToOne
+  @JoinColumn(name = "USER_ID", nullable = false)
+  private UserEntity user;
 
-    @ManyToOne
-    @JoinColumn(name = "WALLET_ID", nullable = false)
-    private WalletEntity wallet;
+  @ManyToOne
+  @JoinColumn(name = "WALLET_ID", nullable = false)
+  private WalletEntity wallet;
 }

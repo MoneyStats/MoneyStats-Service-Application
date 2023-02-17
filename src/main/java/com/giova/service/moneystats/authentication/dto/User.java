@@ -10,39 +10,38 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User extends GenericDTO {
-    @NotNull
-    private String name;
-    @NotNull
-    private String surname;
-    @NotNull
-    private String email;
-    @NotNull
-    private String username;
-    @NotNull
-    private String password;
-    private UserRole role;
-    @NotNull
-    private String profilePhoto;
-    @NotNull
-    private String currency;
-    private String githubUser;
+  @NotNull private String name;
+  @NotNull private String surname;
+  @NotNull private String email;
+  @NotNull private String username;
+  @NotNull private String password;
+  private UserRole role;
+  @NotNull private String profilePhoto;
+  @NotNull private String currency;
+  private String githubUser;
 
-    private AuthToken authToken;
+  private AuthToken authToken;
 
-    public User(String name, String surname, String email, String username, UserRole role, String profilePhoto, String currency) {
-        this.name = name;
-        this.surname = surname;
-        this.email = email;
-        this.username = username;
-        this.role = role;
-        this.profilePhoto = profilePhoto;
-        this.currency = currency;
-    }
+  public User(
+      String name,
+      String surname,
+      String email,
+      String username,
+      UserRole role,
+      String profilePhoto,
+      String currency) {
+    this.name = name;
+    this.surname = surname;
+    this.email = email;
+    this.username = username;
+    this.role = role;
+    this.profilePhoto = profilePhoto;
+    this.currency = currency;
+  }
 }

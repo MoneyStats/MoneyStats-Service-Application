@@ -16,8 +16,8 @@ import java.time.LocalDate;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Stats extends GenericDTO {
 
-    private LocalDate date;
-    private Double balance;
-    private Double percentage;
-    private Double trend;
+  private LocalDate date;
+  private Double balance;
+  private Double percentage;
+  private Double trend;
 }

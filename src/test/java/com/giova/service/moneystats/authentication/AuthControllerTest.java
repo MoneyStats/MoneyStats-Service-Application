@@ -22,32 +22,51 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @ContextConfiguration(classes = AuthController.class)
 public class AuthControllerTest {
 
-    @MockBean
-    private AuthService authService;
+  @MockBean private AuthService authService;
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-    private ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+  private ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
-    @Test
-    public void testRegister_successfully() throws Exception {
-        Response expected = objectMapper.readValue(new ClassPathResource("mock/response/user.json").getInputStream(), Response.class);
-        User user = objectMapper.readValue(new ClassPathResource("mock/request/user.json").getInputStream(), User.class);
+  @Test
+  public void testRegister_successfully() throws Exception {
+    Response expected =
+        objectMapper.readValue(
+            new ClassPathResource("mock/response/user.json").getInputStream(), Response.class);
+    User user =
+        objectMapper.readValue(
+            new ClassPathResource("mock/request/user.json").getInputStream(), User.class);
 
-        String userAsString = objectMapper.writeValueAsString(user);
+    String userAsString = objectMapper.writeValueAsString(user);
+    String token = "token";
 
-        Mockito.when(authService.register(user)).thenReturn(ResponseEntity.ok(expected));
-        mockMvc.perform(MockMvcRequestBuilders.post("/v1/auth/sign-up").contentType(MediaType.APPLICATION_JSON_VALUE).content(userAsString)).andExpect(MockMvcResultMatchers.status().isOk());
-    }
+    Mockito.when(authService.register(user, token)).thenReturn(ResponseEntity.ok(expected));
+    mockMvc
+        .perform(
+            MockMvcRequestBuilders.post("/v1/auth/sign-up")
+                .param("invitationCode", "token")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(userAsString))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+  }
 
-    @Test
-    public void testLogin_successfully() throws Exception {
-        Response expected = objectMapper.readValue(new ClassPathResource("mock/response/login.json").getInputStream(), Response.class);
-        User user = objectMapper.readValue(new ClassPathResource("mock/request/user.json").getInputStream(), User.class);
+  @Test
+  public void testLogin_successfully() throws Exception {
+    Response expected =
+        objectMapper.readValue(
+            new ClassPathResource("mock/response/login.json").getInputStream(), Response.class);
+    User user =
+        objectMapper.readValue(
+            new ClassPathResource("mock/request/user.json").getInputStream(), User.class);
 
-        Mockito.when(authService.login(user.getUsername(), "string")).thenReturn(ResponseEntity.ok(expected));
+    Mockito.when(authService.login(user.getUsername(), "string"))
+        .thenReturn(ResponseEntity.ok(expected));
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/v1/auth/login?username=" + user.getUsername() + "&password=string").contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(MockMvcResultMatchers.status().isOk());
-    }
+    mockMvc
+        .perform(
+            MockMvcRequestBuilders.post(
+                    "/v1/auth/login?username=" + user.getUsername() + "&password=string")
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+  }
 }

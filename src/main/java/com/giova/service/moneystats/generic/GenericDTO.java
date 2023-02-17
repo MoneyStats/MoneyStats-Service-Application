@@ -13,12 +13,11 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GenericDTO {
 
-    private Long id;
+  private Long id;
 
-    private LocalDateTime creationDate;
+  private LocalDateTime creationDate;
 
-    private LocalDateTime updateDate;
+  private LocalDateTime updateDate;
 
-    private LocalDateTime deletedDate;
-
+  private LocalDateTime deletedDate;
 }

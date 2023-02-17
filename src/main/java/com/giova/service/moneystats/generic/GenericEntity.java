@@ -19,24 +19,24 @@ import java.time.temporal.ChronoUnit;
 @MappedSuperclass
 public abstract class GenericEntity {
 
-    @Column(name = "CREATION_DATE", updatable = false)
-    private LocalDateTime creationDate;
+  @Column(name = "CREATION_DATE", updatable = false)
+  private LocalDateTime creationDate;
 
-    @Column(name = "UPDATE_DATE")
-    private LocalDateTime updateDate;
+  @Column(name = "UPDATE_DATE")
+  private LocalDateTime updateDate;
 
-    @Column(name = "DELETED_DATE")
-    private LocalDateTime deletedDate;
+  @Column(name = "DELETED_DATE")
+  private LocalDateTime deletedDate;
 
-    @PrePersist
-    public void creationDates() {
-        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-        setCreationDate(now);
-        setUpdateDate(now);
-    }
+  @PrePersist
+  public void creationDates() {
+    LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+    setCreationDate(now);
+    setUpdateDate(now);
+  }
 
-    @PreUpdate
-    public void updateDates() {
-        setUpdateDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    }
+  @PreUpdate
+  public void updateDates() {
+    setUpdateDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+  }
 }

@@ -24,40 +24,48 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class AppController {
 
-    @Autowired
-    private AppService appService;
+  @Autowired private AppService appService;
 
-    @GetMapping(value = "/dashboard", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Tag(name = "App", description = "API to register an account")
-    @Operation(description = "API to register an account", tags = "App")
-    @LogInterceptor(type = LogTimeTracker.ActionType.APP_CONTROLLER)
-    public ResponseEntity<Response> getDashboard(@RequestHeader("authToken") String authToken) throws UtilsException, JsonProcessingException {
-        return appService.getDashboardData(authToken);
-    }
+  @GetMapping(value = "/dashboard", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Tag(name = "App", description = "API to register an account")
+  @Operation(description = "API to register an account", tags = "App")
+  @LogInterceptor(type = LogTimeTracker.ActionType.APP_CONTROLLER)
+  public ResponseEntity<Response> getDashboard(@RequestHeader("authToken") String authToken)
+      throws UtilsException, JsonProcessingException {
+    return appService.getDashboardData(authToken);
+  }
 
-    @GetMapping(value = "/resume", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Tag(name = "App", description = "API to register an account")
-    @Operation(description = "API to register an account", tags = "App")
-    @LogInterceptor(type = LogTimeTracker.ActionType.APP_CONTROLLER)
-    public ResponseEntity<Response> getResume(@RequestHeader("authToken") String authToken) throws UtilsException {
-        return appService.getResumeData(authToken);
-    }
+  @GetMapping(value = "/resume", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Tag(name = "App", description = "API to register an account")
+  @Operation(description = "API to register an account", tags = "App")
+  @LogInterceptor(type = LogTimeTracker.ActionType.APP_CONTROLLER)
+  public ResponseEntity<Response> getResume(@RequestHeader("authToken") String authToken)
+      throws UtilsException {
+    return appService.getResumeData(authToken);
+  }
 
-    @PostMapping(value = "/add/stats", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Tag(name = "App", description = "API to register an account")
-    @Operation(description = "API to register an account", tags = "App")
-    @LogInterceptor(type = LogTimeTracker.ActionType.APP_CONTROLLER)
-    public ResponseEntity<Response> addStats(@RequestBody @Valid List<Wallet> wallets, @RequestHeader("authToken") String authToken) throws UtilsException {
-        return appService.addStats(wallets, authToken);
-    }
+  @PostMapping(
+      value = "/add/stats",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  @Tag(name = "App", description = "API to register an account")
+  @Operation(description = "API to register an account", tags = "App")
+  @LogInterceptor(type = LogTimeTracker.ActionType.APP_CONTROLLER)
+  public ResponseEntity<Response> addStats(
+      @RequestBody @Valid List<Wallet> wallets, @RequestHeader("authToken") String authToken)
+      throws UtilsException {
+    return appService.addStats(wallets, authToken);
+  }
 
-    @PostMapping(value = "/report/bug", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Tag(name = "App", description = "API to report a bug")
-    @Operation(description = "API to report a bug", tags = "App")
-    @LogInterceptor(type = LogTimeTracker.ActionType.APP_CONTROLLER)
-    public ResponseEntity<Response> bugReport(//@RequestHeader("authToken") String authToken,
-                                              @RequestBody @Valid GithubIssues githubIssues) throws JsonProcessingException {
-        return appService.reportBug(githubIssues);
-    }
-
+  @PostMapping(
+      value = "/report/bug",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  @Tag(name = "App", description = "API to report a bug")
+  @Operation(description = "API to report a bug", tags = "App")
+  @LogInterceptor(type = LogTimeTracker.ActionType.APP_CONTROLLER)
+  public ResponseEntity<Response> bugReport( // @RequestHeader("authToken") String authToken,
+      @RequestBody @Valid GithubIssues githubIssues) throws JsonProcessingException {
+    return appService.reportBug(githubIssues);
+  }
 }

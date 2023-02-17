@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.giova.service</groupId>
     <artifactId>moneystats</artifactId>
-    <version>0.9.4</version>
+    <version>0.9.7</version>
     <!-- <packaging>war</packaging> -->
     <packaging>jar</packaging>
     <name>MoneyStats-Service</name>
@@ -58,8 +58,15 @@
         <dependency>
             <groupId>io.github.giovannilamarmora.utils</groupId>
             <artifactId>utils-code</artifactId>
-            <version>0.2.8</version>
+            <version>0.2.10</version>
         </dependency>
+        <!--<dependency>
+            <groupId>io.github.giovannilamarmora.utils</groupId>
+            <artifactId>utils-code</artifactId>
+            <scope>system</scope>
+            <version>0.2.8</version>
+            <systemPath>C:/Users/giola/Documents/Personal Project/Utils/target/utils-code-0.2.8.jar</systemPath>
+        </dependency>-->
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>

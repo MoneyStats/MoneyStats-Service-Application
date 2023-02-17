@@ -18,21 +18,21 @@ import java.util.List;
 @Service
 public class CategoryService {
 
-    @Autowired
-    private ICategoryDAO iCategoryDAO;
+  @Autowired private ICategoryDAO iCategoryDAO;
 
-    @Autowired
-    private CategoryMapper categoryMapper;
+  @Autowired private CategoryMapper categoryMapper;
 
-    @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
-    public ResponseEntity<Response> getAllCategories() {
-        List<CategoryEntity> categoryEntity = iCategoryDAO.findAll();
-        List<Category> categories = categoryMapper.mapCategoryEntityToCategory(categoryEntity);
+  @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
+  public ResponseEntity<Response> getAllCategories() {
+    List<CategoryEntity> categoryEntity = iCategoryDAO.findAll();
+    List<Category> categories = categoryMapper.mapCategoryEntityToCategory(categoryEntity);
 
-        String message = "List of category!";
+    String message = "List of category!";
 
-        Response response = new Response(HttpStatus.OK.value(), message, CorrelationIdUtils.getCorrelationId(), categories);
+    Response response =
+        new Response(
+            HttpStatus.OK.value(), message, CorrelationIdUtils.getCorrelationId(), categories);
 
-        return ResponseEntity.ok(response);
-    }
+    return ResponseEntity.ok(response);
+  }
 }
