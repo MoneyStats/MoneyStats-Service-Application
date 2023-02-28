@@ -342,11 +342,16 @@ public class AppService {
                     MathService.round(balance.get() - lastBalance.get(), 2));
                 dashboard.setBalance(MathService.round(balance.get(), 2));
                 dashboard.setPerformance(
-                    MathService.round(
-                        ((balance.get() - initialBalance.get()) / initialBalance.get()) * 100, 2));
+                    balance.get() == 0 && initialBalance.get() == 0
+                        ? 0D
+                        : MathService.round(
+                            ((balance.get() - initialBalance.get()) / initialBalance.get()) * 100,
+                            2));
                 dashboard.setLastStatsPerformance(
-                    MathService.round(
-                        ((balance.get() - lastBalance.get()) / lastBalance.get()) * 100, 2));
+                    balance.get() == 0 && lastBalance.get() == 0
+                        ? 0D
+                        : MathService.round(
+                            ((balance.get() - lastBalance.get()) / lastBalance.get()) * 100, 2));
               } catch (UtilsException e) {
                 throw new RuntimeException(e);
               }

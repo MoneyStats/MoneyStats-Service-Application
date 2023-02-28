@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -66,10 +67,13 @@ public class AppInterceptor extends OncePerRequestFilter {
           "Auth-Token error on checking user or regenerate token, message: {}", e.getMessage());
       exceptionResponse =
           getExceptionResponse(e, request, e.getExceptionCode(), e.getExceptionCode().getStatus());
-      response.addHeader("EXCEPTION_RESPONSE", objectMapper.writeValueAsString(exceptionResponse));
+      // response.addHeader("EXCEPTION_RESPONSE",
+      // objectMapper.writeValueAsString(exceptionResponse));
       response.setStatus(e.getExceptionCode().getStatus().value());
       response.setContentType(MediaType.APPLICATION_JSON_VALUE);
       response.getWriter().write(convertObjectToJson(exceptionResponse));
+      // response.sendError(HttpStatus.UNAUTHORIZED.value(),
+      // convertObjectToJson(exceptionResponse));
       // objectMapper.writeValue(response.getWriter(), exceptionResponse);
       return;
     }
