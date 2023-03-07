@@ -26,145 +26,137 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-  @Value(value = "${app.invitationCode}")
-  private String registerToken;
+    @Value(value = "${app.invitationCode}")
+    private String registerToken;
 
-  private final Logger LOG = LoggerFactory.getLogger(this.getClass());
+    private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
-  @Autowired private IAuthDAO iAuthDAO;
+    @Autowired
+    private IAuthDAO iAuthDAO;
 
-  @Autowired private AuthMapper authMapper;
+    @Autowired
+    private AuthMapper authMapper;
 
-  @Autowired private TokenService tokenService;
+    @Autowired
+    private TokenService tokenService;
 
-  final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-  private final UserEntity user;
+    private final UserEntity user;
 
-  @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
-  public ResponseEntity<Response> register(User user, String invitationCode) throws UtilsException {
-    user.setRole(UserRole.USER);
+    @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
+    public ResponseEntity<Response> register(User user, String invitationCode) throws UtilsException {
+        user.setRole(UserRole.USER);
 
-    if (!registerToken.equalsIgnoreCase(invitationCode)) {
-      LOG.error("Invitation code: {}, is wrong", invitationCode);
-      throw new UtilsException(
-          AuthException.ERR_AUTH_MSS_005, AuthException.ERR_AUTH_MSS_005.getMessage());
+        if (!registerToken.equalsIgnoreCase(invitationCode)) {
+            LOG.error("Invitation code: {}, is wrong", invitationCode);
+            throw new UtilsException(AuthException.ERR_AUTH_MSS_005, AuthException.ERR_AUTH_MSS_005.getMessage());
+        }
+
+        UserEntity userEntity = authMapper.mapUserToUserEntity(user);
+        userEntity.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setPassword(null);
+
+        UserEntity saved = iAuthDAO.save(userEntity);
+        saved.setPassword(null);
+
+        String message = "User: " + user.getUsername() + " Successfully registered!";
+
+        Response response = new Response(HttpStatus.OK.value(), message, CorrelationIdUtils.getCorrelationId(), authMapper.mapUserEntityToUser(saved));
+
+        return ResponseEntity.ok(response);
     }
 
-    UserEntity userEntity = authMapper.mapUserToUserEntity(user);
-    userEntity.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-    user.setPassword(null);
+    @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
+    public ResponseEntity<Response> login(String username, String password) throws UtilsException {
 
-    UserEntity saved = iAuthDAO.save(userEntity);
-    saved.setPassword(null);
+        String email = username.contains("@") ? username : null;
+        username = email != null ? null : username;
 
-    String message = "User: " + user.getUsername() + " Successfully registered!";
+        UserEntity userEntity = iAuthDAO.findUserEntityByUsernameOrEmail(username, email);
+        if (userEntity == null) {
+            LOG.error("User not found");
+            throw new UtilsException(AuthException.ERR_AUTH_MSS_003, AuthException.ERR_AUTH_MSS_003.getMessage());
+        }
+        boolean matches = bCryptPasswordEncoder.matches(password, userEntity.getPassword());
+        if (!matches) {
+            LOG.error("User not found");
+            throw new UtilsException(AuthException.ERR_AUTH_MSS_003, AuthException.ERR_AUTH_MSS_003.getMessage());
+        }
 
-    Response response =
-        new Response(
-            HttpStatus.OK.value(),
-            message,
-            CorrelationIdUtils.getCorrelationId(),
-            authMapper.mapUserEntityToUser(saved));
+        User user = authMapper.mapUserEntityToUser(userEntity);
+        user.setPassword(null);
+        user.setAuthToken(tokenService.generateToken(user));
 
-    return ResponseEntity.ok(response);
-  }
+        String message = "Login Successfully! Welcome back " + user.getUsername() + "!";
 
-  @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
-  public ResponseEntity<Response> login(String username, String password) throws UtilsException {
+        Response response = new Response(HttpStatus.OK.value(), message, CorrelationIdUtils.getCorrelationId(), user);
 
-    UserEntity userEntity = iAuthDAO.findUserEntityByUsername(username);
-    if (userEntity == null) {
-      LOG.error("User not found");
-      throw new UtilsException(
-          AuthException.ERR_AUTH_MSS_003, AuthException.ERR_AUTH_MSS_003.getMessage());
-    }
-    boolean matches = bCryptPasswordEncoder.matches(password, userEntity.getPassword());
-    if (!matches) {
-      LOG.error("User not found");
-      throw new UtilsException(
-          AuthException.ERR_AUTH_MSS_003, AuthException.ERR_AUTH_MSS_003.getMessage());
+        return ResponseEntity.ok(response);
     }
 
-    User user = authMapper.mapUserEntityToUser(userEntity);
-    user.setPassword(null);
-    user.setAuthToken(tokenService.generateToken(user));
+    @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
+    public ResponseEntity<Response> checkLoginFE(String authToken) {
 
-    String message = "Login Successfully! Welcome back " + user.getUsername() + "!";
+        User userDTO = authMapper.mapUserEntityToUser(user);
+        userDTO.setPassword(null);
 
-    Response response =
-        new Response(HttpStatus.OK.value(), message, CorrelationIdUtils.getCorrelationId(), user);
+        String message = "Welcome back " + user.getUsername() + "!";
 
-    return ResponseEntity.ok(response);
-  }
+        Response response = new Response(HttpStatus.OK.value(), message, CorrelationIdUtils.getCorrelationId(), userDTO);
 
-  @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
-  public ResponseEntity<Response> checkLoginFE(String authToken) {
-
-    User userDTO = authMapper.mapUserEntityToUser(user);
-    userDTO.setPassword(null);
-
-    String message = "Welcome back " + user.getUsername() + "!";
-
-    Response response =
-        new Response(
-            HttpStatus.OK.value(), message, CorrelationIdUtils.getCorrelationId(), userDTO);
-
-    return ResponseEntity.ok(response);
-  }
-
-  @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
-  public UserEntity checkLogin(String authToken) throws UtilsException {
-    AuthToken token = new AuthToken();
-    token.setAccessToken(authToken);
-    User user = new User();
-    try {
-      user = tokenService.parseToken(token);
-    } catch (UtilsException e) {
-      throw new UtilsException(AuthException.ERR_AUTH_MSS_004, e.getMessage());
-    }
-    UserEntity userEntity = iAuthDAO.findUserEntityByUsername(user.getUsername());
-    // userEntity.setPassword(null);
-
-    if (userEntity == null) {
-      LOG.error("User not found");
-      throw new UtilsException(
-          AuthException.ERR_AUTH_MSS_003, AuthException.ERR_AUTH_MSS_003.getMessage());
-    }
-    return userEntity;
-  }
-
-  @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
-  public AuthToken regenerateToken(UserEntity userEntity) throws UtilsException {
-    User user = authMapper.mapUserEntityToUser(userEntity);
-    AuthToken authToken = tokenService.generateToken(user);
-
-    if (authToken == null) {
-      LOG.error("Token not found");
-      throw new UtilsException(
-          AuthException.ERR_AUTH_MSS_003, AuthException.ERR_AUTH_MSS_003.getMessage());
-    }
-    return authToken;
-  }
-
-  @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
-  public ResponseEntity<Response> updateUserData(String authToken, User userToUpdate) {
-
-    UserEntity userEntity = authMapper.mapUserToUserEntity(userToUpdate);
-    if (userToUpdate.getPassword() != null && !userToUpdate.getPassword().isBlank()) {
-      userEntity.setPassword(bCryptPasswordEncoder.encode(userToUpdate.getPassword()));
-    } else {
-      userEntity.setPassword(user.getPassword());
+        return ResponseEntity.ok(response);
     }
 
-    UserEntity saved = iAuthDAO.save(userEntity);
-    saved.setPassword(null);
+    @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
+    public UserEntity checkLogin(String authToken) throws UtilsException {
+        AuthToken token = new AuthToken();
+        token.setAccessToken(authToken);
+        User user = new User();
+        try {
+            user = tokenService.parseToken(token);
+        } catch (UtilsException e) {
+            throw new UtilsException(AuthException.ERR_AUTH_MSS_004, e.getMessage());
+        }
+        UserEntity userEntity = iAuthDAO.findUserEntityByUsernameOrEmail(user.getUsername(), user.getEmail());
+        // userEntity.setPassword(null);
 
-    String message = "User updated!";
+        if (userEntity == null) {
+            LOG.error("User not found");
+            throw new UtilsException(AuthException.ERR_AUTH_MSS_003, AuthException.ERR_AUTH_MSS_003.getMessage());
+        }
+        return userEntity;
+    }
 
-    Response response =
-        new Response(HttpStatus.OK.value(), message, CorrelationIdUtils.getCorrelationId(), saved);
+    @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
+    public AuthToken regenerateToken(UserEntity userEntity) throws UtilsException {
+        User user = authMapper.mapUserEntityToUser(userEntity);
+        AuthToken authToken = tokenService.generateToken(user);
 
-    return ResponseEntity.ok(response);
-  }
+        if (authToken == null) {
+            LOG.error("Token not found");
+            throw new UtilsException(AuthException.ERR_AUTH_MSS_003, AuthException.ERR_AUTH_MSS_003.getMessage());
+        }
+        return authToken;
+    }
+
+    @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
+    public ResponseEntity<Response> updateUserData(String authToken, User userToUpdate) {
+
+        UserEntity userEntity = authMapper.mapUserToUserEntity(userToUpdate);
+        if (userToUpdate.getPassword() != null && !userToUpdate.getPassword().isBlank()) {
+            userEntity.setPassword(bCryptPasswordEncoder.encode(userToUpdate.getPassword()));
+        } else {
+            userEntity.setPassword(user.getPassword());
+        }
+
+        UserEntity saved = iAuthDAO.save(userEntity);
+        saved.setPassword(null);
+
+        String message = "User updated!";
+
+        Response response = new Response(HttpStatus.OK.value(), message, CorrelationIdUtils.getCorrelationId(), saved);
+
+        return ResponseEntity.ok(response);
+    }
 }
