@@ -18,9 +18,14 @@ rest:
     github:
       issuesUrl: https://api.github.com/repos/MoneyStats/MoneyStats-Service-Application/issues
       authToken: token
+    emailSender:
+      url: http://localhost:8086
+      sendEmailUrl: /v1/send-email
 
 jwt:
   secret: B710834ECC17FAAC9977FE2980C4604E9AAA59
   time: 3600
 app:
   invitationCode: token
+  fe:
+    url: http://localhost:4200
