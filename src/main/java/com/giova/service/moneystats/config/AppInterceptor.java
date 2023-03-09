@@ -1,5 +1,7 @@
 package com.giova.service.moneystats.config;
 
+import static io.github.giovannilamarmora.utils.exception.UtilsException.getExceptionResponse;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -9,24 +11,20 @@ import com.giova.service.moneystats.authentication.entity.UserEntity;
 import com.giova.service.moneystats.authentication.token.dto.AuthToken;
 import io.github.giovannilamarmora.utils.exception.UtilsException;
 import io.github.giovannilamarmora.utils.exception.dto.ExceptionResponse;
+import java.io.IOException;
+import java.util.List;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
-
-import static io.github.giovannilamarmora.utils.exception.UtilsException.getExceptionResponse;
 
 @Component
 @AllArgsConstructor
@@ -85,7 +83,13 @@ public class AppInterceptor extends OncePerRequestFilter {
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
     String path = request.getRequestURI();
-    List<String> notFiltering = List.of("/v1/auth/sign-up", "/v1/auth/login", "/v1/app/report/bug");
+    List<String> notFiltering =
+        List.of(
+            "/v1/auth/sign-up",
+            "/v1/auth/login",
+            "/v1/auth/forgot-password",
+            "/v1/auth/reset-password",
+            "/v1/app/report/bug");
     return notFiltering.contains(path);
   }
 

@@ -8,4 +8,8 @@ import org.springframework.stereotype.Repository;
 public interface IAuthDAO extends JpaRepository<UserEntity, Long> {
 
     UserEntity findUserEntityByUsernameOrEmail(String username, String email);
+
+    UserEntity findUserEntityByEmail(String email);
+
+    UserEntity findUserEntityByTokenReset(String token);
 }

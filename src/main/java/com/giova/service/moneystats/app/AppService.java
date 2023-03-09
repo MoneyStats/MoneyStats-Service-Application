@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.giova.service.moneystats.app.category.CategoryService;
 import com.giova.service.moneystats.app.category.dto.Category;
-import com.giova.service.moneystats.app.client.GithubClient;
+import com.giova.service.moneystats.api.github.GithubClient;
 import com.giova.service.moneystats.app.model.Dashboard;
 import com.giova.service.moneystats.app.model.GithubIssues;
 import com.giova.service.moneystats.app.stats.StatsService;

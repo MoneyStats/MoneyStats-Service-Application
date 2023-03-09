@@ -8,12 +8,11 @@ import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
 import io.github.giovannilamarmora.utils.interceptors.Logged;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 @Logged
 @RestController
@@ -45,6 +44,23 @@ public class AuthController {
   public ResponseEntity<Response> login(
       @RequestParam String username, @RequestParam String password) throws UtilsException {
     return authService.login(username, password);
+  }
+
+  @PostMapping(value = "/forgot-password", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Tag(name = "Authentication", description = "API to reset a password")
+  @Operation(description = "API to reset a password", tags = "Authentication")
+  @LogInterceptor(type = LogTimeTracker.ActionType.APP_CONTROLLER)
+  public ResponseEntity<Response> forgotPassword(@RequestParam String email) throws UtilsException {
+    return authService.forgotPassword(email);
+  }
+
+  @PostMapping(value = "/reset-password", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Tag(name = "Authentication", description = "API to reset a password")
+  @Operation(description = "API to reset a password", tags = "Authentication")
+  @LogInterceptor(type = LogTimeTracker.ActionType.APP_CONTROLLER)
+  public ResponseEntity<Response> resetPassword(
+      @RequestParam String password, @RequestParam String token) throws UtilsException {
+    return authService.resetPassword(password, token);
   }
 
   @GetMapping(value = "/check-login", produces = MediaType.APPLICATION_JSON_VALUE)

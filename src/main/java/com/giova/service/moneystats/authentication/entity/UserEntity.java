@@ -3,12 +3,11 @@ package com.giova.service.moneystats.authentication.entity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.giova.service.moneystats.authentication.dto.UserRole;
 import com.giova.service.moneystats.generic.GenericEntity;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -53,4 +52,7 @@ public class UserEntity extends GenericEntity {
   @Lob
   @Column(name = "GITHUB_USER")
   private String githubUser;
+
+  @Column(name = "TOKEN_RESET")
+  private String tokenReset;
 }

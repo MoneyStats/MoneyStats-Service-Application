@@ -1,4 +1,4 @@
-package com.giova.service.moneystats.app.client;
+package com.giova.service.moneystats.api.github;
 
 import com.giova.service.moneystats.app.model.GithubIssues;
 import io.github.giovannilamarmora.utils.interceptors.Logged;

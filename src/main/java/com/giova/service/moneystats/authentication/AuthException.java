@@ -17,7 +17,8 @@ public enum AuthException implements ExceptionCode {
   ERR_AUTH_MSS_005(
       "INVALID_REGISTER_TOKEN",
       HttpStatus.UNAUTHORIZED,
-      "Error on checking the current token provided, wrong token, try again!");
+      "Error on checking the current token provided, wrong token, try again!"),
+  ERR_AUTH_MSS_006("INVALID_EMAIL", HttpStatus.BAD_REQUEST, "Invalid email address, Try Again!");
 
   private final HttpStatus status;
   private final String message;

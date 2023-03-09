@@ -3,12 +3,11 @@ package com.giova.service.moneystats.authentication.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.giova.service.moneystats.authentication.token.dto.AuthToken;
 import com.giova.service.moneystats.generic.GenericDTO;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotNull;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -27,6 +26,7 @@ public class User extends GenericDTO {
   private String githubUser;
 
   private AuthToken authToken;
+  private String tokenReset;
 
   public User(
       String name,
