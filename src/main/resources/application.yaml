@@ -14,7 +14,7 @@ spring:
 rest:
   client:
     github:
-      issuesUrl: https://api.github.com/repos/MoneyStats/MoneyStats-Service-Application/issues
+      issuesUrl: https://api.github.com/repos/MoneyStats/App/issues
       authToken: ${GITHUB_AUTH_TOKEN}
     emailSender:
       url: https://prod-email-sender.up.railway.app
