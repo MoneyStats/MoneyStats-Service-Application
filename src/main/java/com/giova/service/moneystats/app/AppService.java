@@ -3,11 +3,15 @@ package com.giova.service.moneystats.app;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.giova.service.moneystats.api.emailSender.EmailSenderService;
+import com.giova.service.moneystats.api.emailSender.dto.EmailContent;
+import com.giova.service.moneystats.api.emailSender.dto.EmailResponse;
+import com.giova.service.moneystats.api.github.GithubClient;
 import com.giova.service.moneystats.app.category.CategoryService;
 import com.giova.service.moneystats.app.category.dto.Category;
-import com.giova.service.moneystats.api.github.GithubClient;
 import com.giova.service.moneystats.app.model.Dashboard;
 import com.giova.service.moneystats.app.model.GithubIssues;
+import com.giova.service.moneystats.app.model.Support;
 import com.giova.service.moneystats.app.stats.StatsService;
 import com.giova.service.moneystats.app.stats.dto.Stats;
 import com.giova.service.moneystats.app.wallet.WalletService;
@@ -20,6 +24,12 @@ import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
 import io.github.giovannilamarmora.utils.interceptors.Logged;
 import io.github.giovannilamarmora.utils.interceptors.correlationID.CorrelationIdUtils;
 import io.github.giovannilamarmora.utils.math.MathService;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,13 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Logged
 @Service
@@ -50,6 +53,7 @@ public class AppService {
   private final UserEntity user;
 
   @Autowired private GithubClient githubClient;
+  @Autowired private EmailSenderService emailSenderService;
 
   private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
@@ -166,6 +170,31 @@ public class AppService {
     Response response =
         new Response(
             HttpStatus.OK.value(), message, CorrelationIdUtils.getCorrelationId(), wallets);
+    return ResponseEntity.ok(response);
+  }
+
+  @LogInterceptor(type = LogTimeTracker.ActionType.APP_SERVICE)
+  public ResponseEntity<Response> contactSupport(Support support) throws UtilsException {
+    // Send Email
+    EmailContent emailContent =
+        EmailContent.builder()
+            .subject("MoneyStats - Contact Us!")
+            .to(support.getEmail())
+            .bbc("giovannilamarmora.working@gmail.com")
+            .sentDate(new Date())
+            .build();
+    Map<String, String> param = new HashMap<>();
+    param.put("{{NAME}}", support.getName());
+    param.put("{{MESSAGE}}", support.getMessage());
+    EmailResponse responseEm =
+        emailSenderService.sendEmail(EmailContent.CONTACT_TEMPLATE, param, emailContent);
+
+    String message = "Email Sent! Check your email address!";
+
+    Response response =
+        new Response(
+            HttpStatus.OK.value(), message, CorrelationIdUtils.getCorrelationId(), responseEm);
+
     return ResponseEntity.ok(response);
   }
 

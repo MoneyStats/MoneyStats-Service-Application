@@ -89,7 +89,8 @@ public class AppInterceptor extends OncePerRequestFilter {
             "/v1/auth/login",
             "/v1/auth/forgot-password",
             "/v1/auth/reset-password",
-            "/v1/app/report/bug");
+            "/v1/app/report/bug",
+            "/v1/app/contact");
     return notFiltering.contains(path);
   }
 

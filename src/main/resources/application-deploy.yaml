@@ -27,7 +27,7 @@ rest:
 
 jwt:
   secret: ${JWT_SECRET}
-  time: 3600000
+  time: ${JWT_TIME}
 app:
   invitationCode: ${TOKEN_INVITE}
   fe:

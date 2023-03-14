@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 public class EmailContent {
 
   public static final String RESET_TEMPLATE = "EMAIL_RESET.html";
+  public static final String CONTACT_TEMPLATE = "CONTACT_EMAIL.html";
   private String bbc;
   private String cc;
   private String from;
