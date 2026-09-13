@@ -43,7 +43,7 @@ public class AssetEntity extends GenericEntity {
   private Long rank;
 
   @Lob
-  @Column(name = "ICON")
+  @Column(name = "ICON", columnDefinition = "LONGTEXT")
   private String icon;
 
   @Column(name = "BALANCE")
