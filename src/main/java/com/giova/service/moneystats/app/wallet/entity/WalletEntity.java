@@ -39,7 +39,7 @@ public class WalletEntity extends GenericEntity {
   private Double balance;
 
   @Lob
-  @Column(name = "IMG", nullable = false)
+  @Column(name = "IMG", columnDefinition = "LONGTEXT", nullable = false)
   private String img;
 
   @Column(name = "ALL_TIME_HIGH", nullable = false)
