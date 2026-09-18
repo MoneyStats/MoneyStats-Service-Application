@@ -86,7 +86,7 @@ jobs:
           echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
       - name: Build & push Docker image
-        uses: mr-smithers-excellent/docker-build-push@v7.0
+        uses: mr-smithers-excellent/docker-build-push@v7.1
         with:
           image: ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}
           #tags: latest
